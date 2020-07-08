@@ -1006,6 +1006,30 @@ func (cfg *Config) genSimpleListSpec(t *xsd.SimpleType) ([]spec, error) {
 			}
 			return nil
 		`)
+	case xsd.AnySimpleType:
+		marshalFn = marshalFn.Body(`
+			result := make([][]byte, 0, len(*x))
+			for _, v := range *x {
+				s := strconv.FormatFloat(v, 'g', -1, 64)
+				result = append(result, []byte(s))
+			}
+			return bytes.Join(result, []byte(" ")), nil
+		`)
+		unmarshalFn = unmarshalFn.Body(`
+			for _, v := range strings.Fields(string(text)) {
+				switch v {
+				case "NIL", "\"NIL\"":
+					*x = append(*x, 0.0)
+				default:
+					if f, err := strconv.ParseFloat(v, 64); err != nil {
+						return err
+					} else {
+						*x = append(*x, f)
+					}
+				}
+			}
+			return nil
+		`)
 	case xsd.Date, xsd.DateTime, xsd.GDay, xsd.GMonth, xsd.GMonthDay, xsd.GYear, xsd.GYearMonth, xsd.Time:
 		marshalFn = marshalFn.Body(`
 			result := make([][]byte, 0, len(*x))

@@ -78,4 +78,5 @@ var builtinTbl = []ast.Expr{
 	xsd.UnsignedInt:        &ast.Ident{Name: "uint"},
 	xsd.UnsignedLong:       &ast.Ident{Name: "uint64"},
 	xsd.UnsignedShort:      &ast.Ident{Name: "uint"},
+	xsd.AnySimpleType:      &ast.Ident{Name: "float64"},
 }
